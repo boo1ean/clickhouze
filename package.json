@@ -1,0 +1,15 @@
+{
+  "name": "clickhouse",
+  "version": "0.1.0",
+  "description": "Naive clickhouse client wrapper",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Egor Gumenyuk <boo1ean0807@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "@apla/clickhouse": "^1.2.0",
+    "bluebird": "^3.5.0"
+  }
+}
