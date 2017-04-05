@@ -33,7 +33,7 @@ function query (ch, sql) {
 }
 
 function querySingle (ch, sql) {
-	return query(sql).then(res => {
+	return query(ch, sql).then(res => {
 		if (res && res.length) {
 			return res[0]
 		}
