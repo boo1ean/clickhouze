@@ -1,5 +1,5 @@
 {
-  "name": "clickhouse",
+  "name": "clickhouze",
   "version": "0.1.0",
   "description": "Naive clickhouse client wrapper",
   "main": "index.js",
