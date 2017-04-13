@@ -1,4 +1,3 @@
-const Promise = require('bluebird')
 const ClickHouse = require('@apla/clickhouse')
 
 function insert (ch, table, obj) {
@@ -8,14 +7,27 @@ function insert (ch, table, obj) {
 
 		for (const key in obj) {
 			keys.push(key)
-			values.push(
-				typeof obj[key] === 'string'
-				? escape(obj[key])
-				: obj[key]
-			)
+			values.push(escape(obj[key]))
 		}
 
-		const query = `INSERT INTO ${table}(${keys.join(',')}) VALUES (${values.join(',')})`
+		const query = `insert into ${table}(${keys.join(',')}) values (${values.join(',')})`
+		const stream = ch.query(query)
+		stream.on('error', reject)
+		stream.on('end', resolve)
+	})
+}
+
+function batchInsert (ch, table, rows) {
+	if (!Array.isArray(rows) || !rows.length) {
+		throw new Error('Batch insert rows are missing')
+	}
+	return new Promise((resolve, reject) => {
+		const keys = Object.keys(rows[0])
+		const values = []
+		rows.forEach(row => {
+			values.push(Object.values(row).map(escape))
+		})
+		const query = `insert into ${table} (${keys.join(',')}) values ${values.map(row => `(${row.join(',')})`)}`
 		const stream = ch.query(query)
 		stream.on('error', reject)
 		stream.on('end', resolve)
@@ -41,8 +53,11 @@ function querySingle (ch, sql) {
 	})
 }
 
-function escape (string) {
-	return "'" + string.replace(/\\/g, '\\\\').replace(/'/g, '\\\'') + "'"
+function escape (val) {
+	if (typeof val === 'string') {
+		return "'" + val.replace(/\\/g, '\\\\').replace(/'/g, '\\\'') + "'"
+	}
+	return val
 }
 
 module.exports = function buildClient (config) {
@@ -51,6 +66,7 @@ module.exports = function buildClient (config) {
 	return {
 		client: ch,
 		insert: insert.bind(null, ch),
+		batchInsert: batchInsert.bind(null, ch),
 		query: query.bind(null, ch),
 		querySingle: querySingle.bind(null, ch),
 	}

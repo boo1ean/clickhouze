@@ -1,6 +1,6 @@
 {
   "name": "clickhouze",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Naive clickhouse client wrapper",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,6 @@
   "author": "Egor Gumenyuk <boo1ean0807@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "@apla/clickhouse": "^1.2.0",
-    "bluebird": "^3.5.0"
+    "@apla/clickhouse": "^1.2.0"
   }
 }

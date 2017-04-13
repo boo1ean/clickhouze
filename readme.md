@@ -22,4 +22,6 @@ client.insert('events', { category: 'a', tag1: '2', tag2: '3' })
 
 client.query('select count() from events')
 	.then(result => console.log(result))
+
+client.batchInsert('events', [{ a: 1 }, { b: 2 }, { c: 3 }])
 ```
