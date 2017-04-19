@@ -1,4 +1,4 @@
-const ClickHouse = require('@apla/clickhouse')
+const ClickHouse = require('./client')
 
 function insert (ch, table, obj) {
 	return new Promise((resolve, reject) => {
@@ -10,10 +10,14 @@ function insert (ch, table, obj) {
 			values.push(escape(obj[key]))
 		}
 
-		const query = `insert into ${table}(${keys.join(',')}) values (${values.join(',')})`
-		const stream = ch.query(query)
-		stream.on('error', reject)
-		stream.on('end', resolve)
+		const query = `insert into ${table}(${keys.join(',')}) values (${values.join(',')}) format JSON`
+		return ch.query(query, (err, res) => {
+			if (err) {
+				reject(err)
+			} else {
+				resolve(parseResults(res))
+			}
+		})
 	})
 }
 
@@ -27,20 +31,27 @@ function batchInsert (ch, table, rows) {
 		rows.forEach(row => {
 			values.push(Object.values(row).map(escape))
 		})
-		const query = `insert into ${table} (${keys.join(',')}) values ${values.map(row => `(${row.join(',')})`)}`
-		const stream = ch.query(query)
-		stream.on('error', reject)
-		stream.on('end', resolve)
+		const query = `insert into ${table} (${keys.join(',')}) values ${values.map(row => `(${row.join(',')})`)} format JSON`
+		return ch.query(query, (err, res) => {
+			if (err) {
+				reject(err)
+			} else {
+				resolve(parseResults(res))
+			}
+		})
 	})
 }
 
 function query (ch, sql) {
+	sql += ' format JSON'
 	return new Promise((resolve, reject) => {
-		const stream = ch.query(sql)
-		const rows = []
-		stream.on('error', reject)
-		stream.on('data', row => rows.push(row))
-		stream.on('end', () => resolve(rows))
+		ch.query(sql, (err, res) => {
+			if (err) {
+				reject(err)
+			} else {
+				resolve(parseResults(res))
+			}
+		})
 	})
 }
 
@@ -58,6 +69,10 @@ function escape (val) {
 		return "'" + val.replace(/\\/g, '\\\\').replace(/'/g, '\\\'') + "'"
 	}
 	return val
+}
+
+function parseResults (res) {
+	return JSON.parse(res.body).data
 }
 
 module.exports = function buildClient (config) {

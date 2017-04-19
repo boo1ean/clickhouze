@@ -14,7 +14,6 @@ npm i clickhouze
 const client = require('clickhouze')({
 	host: '127.0.0.1',
 	port: 8123,
-	dataObjects: true,
 })
 
 client.insert('events', { category: 'a', tag1: '2', tag2: '3' })
