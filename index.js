@@ -10,12 +10,12 @@ function insert (ch, table, obj) {
 			values.push(escape(obj[key]))
 		}
 
-		const query = `insert into ${table}(${keys.join(',')}) values (${values.join(',')}) format JSON`
+		const query = `insert into ${table}(${keys.join(',')}) values (${values.join(',')})`
 		return ch.query(query, (err, res) => {
 			if (err) {
 				reject(err)
 			} else {
-				resolve(parseResults(res))
+				resolve()
 			}
 		})
 	})
@@ -31,12 +31,12 @@ function batchInsert (ch, table, rows) {
 		rows.forEach(row => {
 			values.push(Object.values(row).map(escape))
 		})
-		const query = `insert into ${table} (${keys.join(',')}) values ${values.map(row => `(${row.join(',')})`)} format JSON`
+		const query = `insert into ${table} (${keys.join(',')}) values ${values.map(row => `(${row.join(',')})`)}`
 		return ch.query(query, (err, res) => {
 			if (err) {
 				reject(err)
 			} else {
-				resolve(parseResults(res))
+				resolve()
 			}
 		})
 	})
