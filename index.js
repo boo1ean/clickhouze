@@ -72,7 +72,11 @@ function escape (val) {
 }
 
 function parseResults (res) {
-	return JSON.parse(res.body).data
+	try {
+		return JSON.parse(res.body).data
+	} catch (e) {
+		throw new Error(`Unable to parse clickhouse response body: ${res.body}`)
+	}
 }
 
 module.exports = function buildClient (config) {
