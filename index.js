@@ -55,6 +55,18 @@ function query (ch, sql) {
 	})
 }
 
+function queryRaw (ch, sql) {
+	return new Promise((resolve, reject) => {
+		ch.query(sql, (err, res) => {
+			if (err) {
+				reject(err)
+			} else {
+				resolve(res.data)
+			}
+		})
+	})
+}
+
 function querySingle (ch, sql) {
 	return query(ch, sql).then(res => {
 		if (res && res.length) {
@@ -87,6 +99,7 @@ module.exports = function buildClient (config) {
 		insert: insert.bind(null, ch),
 		batchInsert: batchInsert.bind(null, ch),
 		query: query.bind(null, ch),
+		queryRaw: queryRaw.bind(null, ch),
 		querySingle: querySingle.bind(null, ch),
 	}
 }
