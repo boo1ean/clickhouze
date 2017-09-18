@@ -61,7 +61,7 @@ function queryRaw (ch, sql) {
 			if (err) {
 				reject(err)
 			} else {
-				resolve(res.data)
+				resolve(res.body)
 			}
 		})
 	})
