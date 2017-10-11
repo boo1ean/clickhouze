@@ -49,7 +49,11 @@ function query (ch, sql) {
 			if (err) {
 				reject(err)
 			} else {
-				resolve(parseResults(res))
+				try {
+					resolve(JSON.parse(res.body).data)
+				} catch (e) {
+					reject(new Error(`Unable to parse clickhouse response body: ${res.body}`))
+				}
 			}
 		})
 	})
@@ -81,14 +85,6 @@ function escape (val) {
 		return "'" + val.replace(/\\/g, '\\\\').replace(/'/g, '\\\'') + "'"
 	}
 	return val
-}
-
-function parseResults (res) {
-	try {
-		return JSON.parse(res.body).data
-	} catch (e) {
-		throw new Error(`Unable to parse clickhouse response body: ${res.body}`)
-	}
 }
 
 module.exports = function buildClient (config) {
