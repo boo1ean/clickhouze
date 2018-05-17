@@ -9,14 +9,21 @@ module.exports = function createClient (config) {
 	if (config.database) {
 		clickhouseServerUrl += '?database=' + config.database
 	}
-
+	let clickhouseParams = {
+		method: 'post',
+		url: clickhouseServerUrl	
+	}
+	if (config.user && config.password) {
+		clickhouseParams.auth = { 
+			user: config.user,
+			pass: config.password
+		}
+	}
+	
 	return {
 		query: (queryText, cb) => {
-			request({
-				method: 'post',
-				url: clickhouseServerUrl,
-				body: queryText
-			}, (err, res) => {
+			clickhouseParams.body = queryText
+			request(clickhouseParams, (err, res) => {
 				if (cb) {
 					cb(err, res)
 				} else {
